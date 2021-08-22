@@ -10,7 +10,6 @@ Notes:                  https://freesound.org/apiv2/search/text'
                         No rate limit specified.
 """
 import functools
-import json
 import os
 import logging
 from urllib.parse import urlparse
@@ -207,7 +206,10 @@ def _get_alt_files(media_data):
     if previews is not None:
         for preview_type in previews:
             preview_url = previews[preview_type]
-            alt_files.append({'url': preview_url, 'format': preview_type.split('-')[-1]})
+            alt_files.append({
+                'url': preview_url,
+                'format': preview_type.split('-')[-1]
+            })
     return alt_files
 
 
