@@ -6,16 +6,18 @@ ETL Process:            Use the API to identify all CC-licensed images.
 Output:                 TSV file containing the image, the respective
                         meta-data.
 
-Notes:                  {{API URL}}
+Notes:                  https://freesound.org/apiv2/search/text'
                         No rate limit specified.
 """
+import functools
+import json
 import os
 import logging
 from urllib.parse import urlparse
 
-from common import DelayedRequester
-from common import get_license_info
-from common import AudioStore
+from common.licenses.licenses import get_license_info
+from common.requester import DelayedRequester
+from common.storage.audio import AudioStore
 from util.loader import provider_details as prov
 
 logging.basicConfig(
@@ -30,6 +32,8 @@ RETRIES = 3
 HOST = 'freesound.org'
 ENDPOINT = f'https://{HOST}/apiv2/search/text'
 PROVIDER = prov.FREESOUND_DEFAULT_PROVIDER
+# Freesound only has 'sounds'
+FREESOUND_CATEGORY = 'sound'
 API_KEY = os.getenv(
     "FREESOUND_API_KEY",
     "not_set"
@@ -43,9 +47,9 @@ DEFAULT_QUERY_PARAMS = {
     'token': API_KEY,
     'query': '',
     'page_size': LIMIT,
-    'fields': 'id,url,name,tags,description,created,license,type,channels,'
+    'fields': 'id,url,name,tags,description,created,license,type,download,'
               'filesize,bitrate,bitdepth,duration,samplerate,pack,username,'
-              'images,num_downloads,avg_rating,num_ratings'
+              'num_downloads,avg_rating,num_ratings,geotag,previews'
 }
 
 delayed_requester = DelayedRequester(DELAY)
@@ -66,8 +70,8 @@ def main():
         'Creative Commons 0'
     ]
     for license_name in licenses:
-        image_count = _get_items(license_name)
-        logger.info(f"Audios for {license_name} pulled: {image_count}")
+        audio_count = _get_items(license_name)
+        logger.info(f"Audios for {license_name} pulled: {audio_count}")
     logger.info('Terminated!')
 
 
@@ -134,6 +138,8 @@ def _process_item_batch(items_batch):
 
 
 def _extract_audio_data(media_data):
+    """Extracts meta data about the audio file
+    Freesound does not have audio thumbnails"""
     try:
         foreign_landing_url = media_data["url"]
     except (TypeError, KeyError, KeyError):
@@ -144,26 +150,72 @@ def _extract_audio_data(media_data):
     item_license = _get_license(media_data)
     if item_license is None:
         return None
-    foreign_identifier = _get_foreign_identifier(media_data)
-    title = _get_title(media_data)
     creator, creator_url = _get_creator_data(media_data)
-    thumbnail = _get_thumbnail_url(media_data)
-    metadata = _get_metadata(media_data)
-    tags = _get_tags(media_data)
+    file_properties = _get_file_properties(media_data)
+    audio_set, set_url = _get_audio_set(media_data)
+
     return {
-        'title': title,
+        'title': _get_title(media_data),
         'creator': creator,
         'creator_url': creator_url,
-        'foreign_identifier': foreign_identifier,
+        'foreign_identifier': _get_foreign_identifier(media_data),
         'foreign_landing_url': foreign_landing_url,
         'audio_url': audio_url,
         'duration': duration,
-        'thumbnail_url': thumbnail,
-        'license_': item_license.license,
-        'license_version': item_license.version,
-        'meta_data': metadata,
-        'raw_tags': tags
+        'license_info': item_license,
+        'meta_data': _get_metadata(media_data),
+        'raw_tags': media_data.get('tags'),
+        'audio_set': audio_set,
+        'set_url': set_url,
+        'alt_files': _get_alt_files(media_data),
+        'category': FREESOUND_CATEGORY,
+        **file_properties
     }
+
+
+def _get_audio_set(media_data):
+    # set name, set thumbnail, position of audio in set, set url
+    set_name = None
+    set_url = media_data.get('pack')
+    if set_url is not None:
+        set_name = _get_set_name(set_url)
+    return set_name, set_url
+
+
+@functools.lru_cache(maxsize=1024)
+def _get_set_name(set_url):
+    response_json = delayed_requester.get_response_json(
+        set_url,
+        3,
+        query_params={'token': API_KEY},
+    )
+    name = response_json.get('name')
+    return name
+
+
+def _get_alt_files(media_data):
+    alt_files = [{
+        'url': media_data.get('download'),
+        'format': media_data.get('type'),
+        'filesize': media_data.get('filesize'),
+        'bit_rate': media_data.get('bitrate'),
+        'sample_rate': media_data.get('samplerate')
+    }]
+    previews = media_data.get('previews')
+    print(f"Previews: {previews}")
+    if previews is not None:
+        for preview_type in previews:
+            preview_url = previews[preview_type]
+            alt_files.append({'url': preview_url, 'format': preview_type.split('-')[-1]})
+    return alt_files
+
+
+def _get_file_properties(media_data):
+    props = {
+        'bit_rate': int(media_data.get('bitrate')),
+        'sample_rate': int(media_data.get('samplerate')),
+    }
+    return props
 
 
 def _get_foreign_identifier(media_data):
@@ -174,16 +226,14 @@ def _get_foreign_identifier(media_data):
 
 
 def _get_audio_info(media_data):
-    duration = media_data.get('duration')
-    # TODO: Need oauth to get sample!
+    duration = int(media_data.get('duration') * 1000)
+    # TODO: Decide whether to use
+    # 1. foreign landing url - not playable
+    # 2. download url - needs OAuth2
+    # 3. mp3 preview - is probably lower quality. Is full file?
     # This URL is foreign_landing_url
     audio_url = media_data.get('url')
     return audio_url, duration
-
-
-def _get_thumbnail_url(media_data):
-    # TODO: No thumbnails, has waveforms
-    return media_data.get('images', {}).get('waveform_m', None)
 
 
 def _get_creator_data(item):
@@ -201,17 +251,17 @@ def _get_title(item):
 
 
 def _get_metadata(item):
+    # previews is a dictionary with URIs for mp3 and ogg
+    # versions of the file (preview-hq-mp3 ~128kbps, preview-lq-mp3 ~64kbps
+    # preview-hq-ogg ~192kbps, preview-lq-ogg ~80kbps).
     metadata = {}
-    fields = ['description', 'num_downloads', 'avg_rating', 'num_rating']
+    fields = ['description', 'num_downloads', 'avg_rating',
+              'num_ratings', 'geotag', 'download', 'previews']
     for field in fields:
         field_value = item.get(field)
         if field_value:
             metadata[field] = field_value
     return metadata
-
-
-def _get_tags(item):
-    return item.get('tags')
 
 
 def _get_license(item):
