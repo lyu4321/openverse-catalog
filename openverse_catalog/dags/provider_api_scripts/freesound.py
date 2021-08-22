@@ -57,8 +57,7 @@ audio_store = AudioStore(provider=PROVIDER)
 
 
 def main():
-    """
-    This script pulls the data for a given date from the Freesound,
+    """This script pulls the data for a given date from the Freesound,
     and writes it into a .TSV file to be eventually read
     into our DB.
     """
@@ -75,14 +74,14 @@ def main():
     logger.info('Terminated!')
 
 
-def _get_query_param(
+def _get_query_params(
         license_name='',
         page_number=1,
-        default_query_param=None,
+        default_query_params=None,
 ):
-    if default_query_param is None:
-        default_query_param = DEFAULT_QUERY_PARAMS
-    query_param = default_query_param.copy()
+    if default_query_params is None:
+        default_query_params = DEFAULT_QUERY_PARAMS
+    query_param = default_query_params.copy()
     query_param["page"] = str(page_number)
     query_param['license'] = license_name
     return query_param
@@ -93,7 +92,7 @@ def _get_items(license_name):
     page_number = 1
     should_continue = True
     while should_continue:
-        query_param = _get_query_param(
+        query_param = _get_query_params(
             license_name=license_name,
             page_number=page_number)
         batch_data = _get_batch_json(
@@ -144,6 +143,9 @@ def _extract_audio_data(media_data):
         foreign_landing_url = media_data["url"]
     except (TypeError, KeyError, KeyError):
         return None
+    foreign_identifier = _get_foreign_identifier(media_data)
+    if foreign_identifier is None:
+        return None
     audio_url, duration = _get_audio_info(media_data)
     if audio_url is None:
         return None
@@ -158,7 +160,7 @@ def _extract_audio_data(media_data):
         'title': _get_title(media_data),
         'creator': creator,
         'creator_url': creator_url,
-        'foreign_identifier': _get_foreign_identifier(media_data),
+        'foreign_identifier': foreign_identifier,
         'foreign_landing_url': foreign_landing_url,
         'audio_url': audio_url,
         'duration': duration,
@@ -202,7 +204,6 @@ def _get_alt_files(media_data):
         'sample_rate': media_data.get('samplerate')
     }]
     previews = media_data.get('previews')
-    print(f"Previews: {previews}")
     if previews is not None:
         for preview_type in previews:
             preview_url = previews[preview_type]
@@ -237,11 +238,11 @@ def _get_audio_info(media_data):
 
 
 def _get_creator_data(item):
-    creator = item.get('username').strip()
+    creator = item.get('username', '').strip()
     if creator:
         creator_url = f"https://freesound.org/people/{creator}/"
     else:
-        creator_url = None
+        creator, creator_url = None, None
     return creator, creator_url
 
 
