@@ -7,7 +7,7 @@ import freesound
 from common.licenses.licenses import LicenseInfo
 
 RESOURCES = Path(__file__).parent / 'tests/resources/freesound'
-AUDIO_DATA_EXAMPLE = RESOURCES / 'audio_data_example'
+AUDIO_DATA_EXAMPLE = RESOURCES / 'audio_data_example.json'
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s:  %(message)s',
