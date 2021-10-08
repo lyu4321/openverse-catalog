@@ -39,7 +39,7 @@ body:
     attributes:
       value: |
         ## Checklist to complete before beginning development
-        Please do not modify this section
+        <!-- Please do not modify this section -->
         
         No development should be done on a Provider API Script until the following info is gathered:
       
