@@ -34,7 +34,9 @@ body:
     validations:
       required: true
   - type: markdown
-    value: "## Thank you for contributing to our project!"
+    id: thank-you
+    attributes:
+      value: "## Thank you for contributing to our project!"  
   - type: markdown
     id: checklist
     attributes:
