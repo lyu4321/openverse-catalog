@@ -33,26 +33,21 @@ body:
                    <!-- etc. -->
     validations:
       required: true
-  - type: checkboxes
+  - type: markdown
     id: checklist
-    validations:
-      required: true
     attributes:
-      label: Checklist to complete before beginning development
-      description: <!-- please do not modify this section -->
-      options:
-        - label: Verify there is a way to retrieve the entire relevant portion of the provider's collection in a systematic way via their API.
-          required: false
-        - label: Verify the API provides license info (license type and version; license URL provides both, and is preferred)
-          required: false
-        - label: Verify the API provides stable direct links to individual works.
-          required: false
-        - label: Verify the API provides a stable landing page URL to individual works.
-          required: false
-        - label: Note other info the API provides, such as thumbnails, dimensions, attribution info (required if non-CC0 licenses will be kept), title, description, other meta data, tags, etc.
-          required: false
-        - label: Attach example responses to API queries that have the relevant info.
-          required: false
+      value: |
+      ## Checklist to complete before beginning development
+      <!-- please do not modify this section -->
+
+      No development should be done on a Provider API Script until the following info is gathered:
+
+      - [ ] Verify there is a way to retrieve the entire relevant portion of the provider's collection in a systematic way via their API.
+      - [ ] Verify the API provides license info (license type and version; license URL provides both, and is preferred)
+      - [ ] Verify the API provides stable direct links to individual works.
+      - [ ] Verify the API provides a stable landing page URL to individual works.
+      - [ ] Note other info the API provides, such as thumbnails, dimensions, attribution info (required if non-CC0 licenses will be kept), title, description, other meta data, tags, etc.
+      - [ ] Attach example responses to API queries that have the relevant info.
   - type: markdown
     attributes: 
       value: |
