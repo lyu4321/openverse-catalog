@@ -39,7 +39,7 @@ body:
     attributes:
       value: |
         ## Checklist to complete before beginning development
-        <!-- please do not modify this section -->
+        Please do not modify this section
         
         No development should be done on a Provider API Script until the following info is gathered:
       
@@ -53,7 +53,7 @@ body:
     attributes: 
       value: |
         ## General Recommendations for implementation
-        <!-- modify this section if necessary -->
+        Modify this section if necessary
         
         - The script should be in the `openverse_catalog/dags/provider_api_scripts/` directory.
         - The script should have a test suite in the same directory.
@@ -71,7 +71,7 @@ body:
     attributes: 
       value: |
         ## Examples of other Provider API Scripts
-        <!-- It's unlikely this section needs to be modified -->
+        It's unlikely this section needs to be modified
         
         For example Provider API Scripts and accompanying test suites, please see
         
