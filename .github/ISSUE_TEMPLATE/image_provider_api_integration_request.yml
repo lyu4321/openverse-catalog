@@ -1,44 +1,46 @@
 name: Image Provider API Integration Request
 description: Tell us about an API providing CC-licensed images
 title: "[API Integration] Provider name here"
-labels: ["🚦 status: awaiting triage", "✨ goal: improvement", "🧹 status: ticket work required", "☁️ provider: images"]
+labels: 
+  - 🚦 status: awaiting triage
+  - ✨ goal: improvement
+  - 🧹 status: ticket work required
+  - ☁️ provider: images"]
 body:
   - type: input
     id: provider
     attributes:
       label: Provider API Endpoint / Documentation
-      description: <!-- Please provide links to the API endpoint, and any known documentation -->
+      description: Please provide links to the API endpoint, and any known documentation
     validations:
       required: true
   - type: input
     id: description
     attributes:
       label: Provider description
-      description: <!-- Please provide a clear and concise description of the image provider -->
+      description: Please provide a clear and concise description of the image provider
     validations:
       required: true
   - type: input
     id: licenses
     attributes:
       label: Licenses Provided
-      description: <!-- Which licenses does the provider use for images (if known) -->
+      description: Which licenses does the provider use for images (if known)
     validations:
       required: true
   - type: textarea
     id: technical-info
     attributes:
       label: Provider API Technical info
-      description: <!-- Please provide any technical details that might be useful for -->
-                   <!-- implementation, e.g., rate limits, filtering options, overall volume, -->
-                   <!-- etc. -->
+      description: Please provide any technical details that might be useful for implementation, e.g., rate limits, filtering options, overall volume, etc.
     validations:
       required: true
   - type: markdown
-    id: checklist
     attributes:
       value: |
-        ### Checklist to complete before beginning development
+        ## Checklist to complete before beginning development
         <!-- please do not modify this section -->
+        
         No development should be done on a Provider API Script until the following info is gathered:
       
         - [ ] Verify there is a way to retrieve the entire relevant portion of the provider's collection in a systematic way via their API.
@@ -52,6 +54,7 @@ body:
       value: |
         ## General Recommendations for implementation
         <!-- modify this section if necessary -->
+        
         - The script should be in the `openverse_catalog/dags/provider_api_scripts/` directory.
         - The script should have a test suite in the same directory.
         - The script must use the `ImageStore` class (Import this from `openverse_catalog/dags/provider_api_scripts/common/storage/image.py`).
@@ -69,6 +72,7 @@ body:
       value: |
         ## Examples of other Provider API Scripts
         <!-- It's unlikely this section needs to be modified -->
+        
         For example Provider API Scripts and accompanying test suites, please see
         
         - `openverse_catalog/dags/provider_api_scripts/flickr.py` and
@@ -79,7 +83,7 @@ body:
     id: implementation
     attributes:
       label: Implementation
-      description: <!-- Replace the [ ] with [x] to check the box. -->
+      description: Replace the [ ] with [x] to check the box.
       options:
         - label: 🙋 I would be interested in implementing this feature.
           required: false
