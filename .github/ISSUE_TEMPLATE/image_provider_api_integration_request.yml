@@ -55,9 +55,9 @@ body:
           required: false
   - type: markdown
     attributes: 
-      label: General Recommendations for implementation
-      description: <!-- modify this section if necessary -->
       value: |
+        ## General Recommendations for implementation
+        <!-- modify this section if necessary -->
         - The script should be in the `openverse_catalog/dags/provider_api_scripts/` directory.
         - The script should have a test suite in the same directory.
         - The script must use the `ImageStore` class (Import this from `openverse_catalog/dags/provider_api_scripts/common/storage/image.py`).
@@ -72,9 +72,9 @@ body:
         [pep8]: https://www.python.org/dev/peps/pep-0008/
   - type: markdown
     attributes: 
-      label: Examples of other Provider API Scripts
-      description: <!-- It's unlikely this section needs to be modified -->
       value: |
+        ## Examples of other Provider API Scripts
+        <!-- It's unlikely this section needs to be modified -->
         For example Provider API Scripts and accompanying test suites, please see
         
         - `openverse_catalog/dags/provider_api_scripts/flickr.py` and
