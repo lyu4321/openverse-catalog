@@ -2,10 +2,10 @@ name: Image Provider API Integration Request
 description: Tell us about an API providing CC-licensed images
 title: "[API Integration] Provider name here"
 labels: 
-  - 🚦 status: awaiting triage
-  - ✨ goal: improvement
-  - 🧹 status: ticket work required
-  - ☁️ provider: images"]
+  - "🚦 status: awaiting triage"
+  - "✨ goal: improvement"
+  - "🧹 status: ticket work required"
+  - "☁️ provider: images"
 body:
   - type: input
     id: provider
