@@ -34,14 +34,10 @@ body:
     validations:
       required: true
   - type: markdown
-    id: thank-you
-    attributes:
-      value: "## Thank you for contributing to our project!"  
-  - type: markdown
     id: checklist
     attributes:
       value: |
-        ## Checklist to complete before beginning development
+        ### Checklist to complete before beginning development
         <!-- please do not modify this section -->
         No development should be done on a Provider API Script until the following info is gathered:
       
