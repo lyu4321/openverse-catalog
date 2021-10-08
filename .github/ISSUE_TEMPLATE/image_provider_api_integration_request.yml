@@ -35,7 +35,7 @@ body:
       description: Please provide any technical details that might be useful for implementation, e.g., rate limits, filtering options, overall volume, etc.
     validations:
       required: true
-  - type: checkboxes
+  - type: textarea
     attributes:
     label: Checklist to complete before beginning development
     description: Please do not modify this section
