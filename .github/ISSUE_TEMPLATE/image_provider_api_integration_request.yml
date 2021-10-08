@@ -75,7 +75,7 @@ body:
     attributes: 
       value: |
         ## General Recommendations for implementation
-        Modify this section if necessary
+        # Modify this section if necessary
         
         - The script should be in the `openverse_catalog/dags/provider_api_scripts/` directory.
         - The script should have a test suite in the same directory.
@@ -93,7 +93,7 @@ body:
     attributes: 
       value: |
         ## Examples of other Provider API Scripts
-        <small>It's unlikely this section needs to be modified</small>
+        <p>It's unlikely this section needs to be modified</p>
         For example Provider API Scripts and accompanying test suites, please see
         
         - `openverse_catalog/dags/provider_api_scripts/flickr.py` and
