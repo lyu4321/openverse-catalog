@@ -71,7 +71,7 @@ body:
     attributes: 
       value: |
         ## Examples of other Provider API Scripts
-        It's unlikely this section needs to be modified
+        <!-- It's unlikely this section needs to be modified -->
         
         For example Provider API Scripts and accompanying test suites, please see
         
