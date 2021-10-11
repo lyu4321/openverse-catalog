@@ -5,7 +5,6 @@ labels:
   - "🚦 status: awaiting triage"
   - "🧹 status: ticket work required"
   - "☁️ provider: any"
-assignees: []
 body:
   - type: input
     id: source
